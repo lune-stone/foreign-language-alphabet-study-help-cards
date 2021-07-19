@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="data:,">
+		<title>Foreign Language Alphabet Study Help (FLASH) Cards</title>
+	</head>
+
+	<body>
+		<pre id="output"></pre>
+		<input type="text" id="input"></input>
+	</body>
+
+	<script>
+
+		let input;
+		let output;
+
+		let data;
+
+		function start() {
+
+					input = document.getElementById('input');
+					output = document.getElementById('output');
+
+					data = JSON.parse(window.localStorage.getItem('data'));
+					//if (data == null) {
+					{
+								data = init_data();
+								window.localStorage.setItem('data', JSON.stringify(data));					
+							}
+					if (data.version !== 1) {
+								throw "unsupported data version: " + data.version;
+							}
+
+					input.addEventListener('keyup', keyup);
+
+					render();
+				}
+
+		function keyup(e) {
+					if (e.code === 'Space') {
+								let answer = input.value.trim();
+								console.log(answer);
+								input.value = '';
+							}
+					render();
+				}
+
+		function render() {
+					//TODO
+					output.textContent = Object.values(data.decks[0].cards)[0].front;
+				}
+
+		function init_data() {
+					let data = {
+								version: 1,
+								decks: [],
+								current_deck_idx: null,
+								settings: {
+											history_size: 20, // number of user answers to remember
+											learn_size: 5, // number of times to present the card with a hint before considering it "learned" and moving on to other card(s)
+											learn_draw_rate: 0.1, // probably of choosing a card being learned
+											draw_weight_modifier: 1.0 // near 0 results in uniform draws from learned. Higher values will focus on cards with poor score.
+										}
+							};
+
+					data.decks.push(create_jp_deck());
+					data.current_deck_idx = 0;
+
+					return data;
+				}
+
+		// lower of wilson interval
+		function score(positive, negative) {
+					let p = positive;
+					let n = negative;
+					return ((p + 1.9208) / (p + n) - 1.96 * Math.sqrt((p * n) / (p + n) + 0.9604) / (p + n)) / (1 + 3.8416 / (p + n))
+				}
+
+		function create_jp_deck() {
+					let cards = {};
+
+					let hiragana_table = `
+	 _	a	i	u	e	o	n
+	 _	あ	い	う	え	お	ん
+	 k	か	き	く	け	こ
+	 g	が	ぎ	ぐ	げ	ご
+	 s	さ	し	す	せ	そ
+	 z	ざ	じ	ず	ぜ	ぞ
+	 t	た	ち	つ	て	と
+	 d	だ	ぢ	づ	で	ど
+	 n	な	に	ぬ	ね	の
+	 h	は	ひ	ふ	へ	ほ
+	 b	ば	び	ぶ	べ	ぼ
+	 p	ぱ	ぴ	ぷ	ぺ	ぽ
+	 m	ま	み	む	め	も
+	 y	や		ゆ		よ
+	 r	ら	り	る	れ	ろ
+	 w	わ				を
+	 `;
+					hiragana_table = hiragana_table.trim().split('\n').map(row => row.trim().split('\t'));
+					
+					for (let row = 1; row < hiragana_table.length; ++row) {
+								for (let column = 1; column < hiragana_table[row].length; ++column) {
+											let card = {
+														front: hiragana_table[row][column],
+														back: hiragana_table[row][0] + hiragana_table[0][column],
+														group: row - 1
+													};
+											card.back = card.back.replaceAll('_', '');
+											if (card.front !== '') {
+														cards[card.front] = card;
+													}
+										}
+							}
+
+					let exceptional_hiragana = [
+								{
+											front: "ふ",
+											back: "fu"
+										},
+								{
+											front: "し",
+											back: "shi"
+										},
+								{
+											front: "じ",
+											back: "ji"
+										},
+								{
+											front: "ち",
+											back: "chi"
+										},
+								{
+											front: "つ",
+											back: "tsu"
+										},
+								{
+											front: "ぢ",
+											back: "di",
+											hint: "di (uncommon, sounds like ji / じ in most dialects)"
+										},
+								{
+											front: "づ",
+											back: "du",
+											hint: "du (uncommon, sounds like zu / ず in most dialects)"
+										}
+							];
+
+					for (let item of exceptional_hiragana) {
+								let card = cards[item.front];
+								card.back = item.back;
+								card.hint = item.hint;
+							}
+
+
+					let hiragana_digraphs = []; //TODO
+
+					let katakana_table = `
+	 a	i	u	e	o	n
+	 ∅	ア	イ	ウ	エ	オ	ン
+	 k	カ	キ	ク	ケ	コ
+	 g	ガ	ギ	グ	ゲ	ゴ
+	 s	サ	シ	ス	セ	ソ
+	 z	ザ	ジ	ズ	ゼ	ゾ
+	 t	タ	チ	ツ	テ	ト
+	 d	ダ	ヂ	ヅ	デ	ド
+	 n	ナ	ニ	ヌ	ネ	ノ
+	 h	ハ	ヒ	フ	ヘ	ホ
+	 b	バ	ビ	ブ	ベ	ボ
+	 p	パ	ピ	プ	ペ	ポ
+	 m	マ	ミ	ム	メ	モ
+	 y	ヤ		ユ		ヨ
+	 r	ラ	リ	ル	レ	ロ
+	 w	ワ				ヲ
+	 `;
+				
+					//TODO
+
+
+					return {
+								name: 'jp -> en',
+								cards: cards,
+								answers: {}
+							};
+				}
+
+		start();
+	</script>
+
+</html>
+
