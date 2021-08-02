@@ -7,21 +7,37 @@
 	</head>
 
 	<body>
-		<pre id="output"></pre>
-		<input type="text" id="input"></input>
+		<center>
+			<h1>Foreign Language Alphabet Study Help (FLASH) Cards</h1>
+			<div>
+				<p>Instructions: Please type the sound of the letter followed by a [space] or [enter].</p>
+				<p id="front"></p>
+				<p id="hint"></p>
+				<input type="text" id="input"></input>
+				<p id="history"></p>
+			</div>
+		</center>
 	</body>
 
 	<script>
 
-		let input;
-		let output;
+		let input_ele;
+		let front_ele;
+		let hint_ele;
+		let history_ele;
 
 		let data;
+		let current_card;
+		let display_hint;
+		let answer_count;
+		let history;
 
 		function start() {
 
-					input = document.getElementById('input');
-					output = document.getElementById('output');
+					input_ele = document.getElementById('input');
+					front_ele = document.getElementById('front');
+					hint_ele = document.getElementById('hint');
+					history_ele = document.getElementById('history');
 
 					data = JSON.parse(window.localStorage.getItem('data'));
 					//if (data == null) {
@@ -32,24 +48,63 @@
 					if (data.version !== 1) {
 								throw "unsupported data version: " + data.version;
 							}
+					displayHint = false;
+					answer_count = 0;
+					history = [];
 
-					input.addEventListener('keyup', keyup);
+					input_ele.addEventListener('keyup', keyup);
+					input_ele.focus();
 
+					pick_next_card();
 					render();
 				}
 
+		function pick_next_card() {
+					let cards = Object.values(data.decks[0].cards);
+					let i = Math.floor(Math.random() * cards.length);
+					current_card = cards[i];
+					display_hint = true;
+
+					//TODO only show learned / learning
+					// TODO weight cards
+				}
+
+		function submit_answer(answer) {
+					if (current_card.back === answer) {
+								//TODO use answer count answer_count to determine if was answered correctly this first time
+								history.push('<span style="color:MediumSeaGreen;">✓</span> +1 for correct answer to ' + current_card.front);
+								//TODO adjust & display score
+							}
+					else {
+								history.push('<span style="color:Tomato;">✗</span> -1 for incorrect answer to ' + current_card.front);
+								//TODO adjust & display score
+							}
+
+					if (history.length > 5) {
+								history.shift();
+							}
+					pick_next_card();
+				}
+
 		function keyup(e) {
-					if (e.code === 'Space') {
-								let answer = input.value.trim();
-								console.log(answer);
-								input.value = '';
+					if (e.code === 'Space' || e.code === 'Enter') {
+								let answer = input_ele.value.trim();
+								if (answer === '')
+									return;
+								submit_answer(answer);
+								input_ele.value = '';
 							}
 					render();
 				}
 
 		function render() {
-					//TODO
-					output.textContent = Object.values(data.decks[0].cards)[0].front;
+					front_ele.textContent = 'Letter: ' + current_card.front;
+					hint_ele.textContent = display_hint ? 'Hint: ' + (current_card.hint || current_card.back) : '';
+					let s = '';
+					for (h of history) {
+								s += '<br>' + h;
+							}
+					history_ele.innerHTML = s.trim();
 				}
 
 		function init_data() {
@@ -82,25 +137,25 @@
 					let cards = {};
 
 					let hiragana_table = `
-	 _	a	i	u	e	o	n
-	 _	あ	い	う	え	お	ん
-	 k	か	き	く	け	こ
-	 g	が	ぎ	ぐ	げ	ご
-	 s	さ	し	す	せ	そ
-	 z	ざ	じ	ず	ぜ	ぞ
-	 t	た	ち	つ	て	と
-	 d	だ	ぢ	づ	で	ど
-	 n	な	に	ぬ	ね	の
-	 h	は	ひ	ふ	へ	ほ
-	 b	ば	び	ぶ	べ	ぼ
-	 p	ぱ	ぴ	ぷ	ぺ	ぽ
-	 m	ま	み	む	め	も
-	 y	や		ゆ		よ
-	 r	ら	り	る	れ	ろ
-	 w	わ				を
-	 `;
+					_	a	i	u	e	o	n
+					_	あ	い	う	え	お	ん
+					k	か	き	く	け	こ
+					g	が	ぎ	ぐ	げ	ご
+					s	さ	し	す	せ	そ
+					z	ざ	じ	ず	ぜ	ぞ
+					t	た	ち	つ	て	と
+					d	だ	ぢ	づ	で	ど
+					n	な	に	ぬ	ね	の
+					h	は	ひ	ふ	へ	ほ
+					b	ば	び	ぶ	べ	ぼ
+					p	ぱ	ぴ	ぷ	ぺ	ぽ
+					m	ま	み	む	め	も
+					y	や		ゆ		よ
+					r	ら	り	る	れ	ろ
+					w	わ				を
+					`;
 					hiragana_table = hiragana_table.trim().split('\n').map(row => row.trim().split('\t'));
-					
+
 					for (let row = 1; row < hiragana_table.length; ++row) {
 								for (let column = 1; column < hiragana_table[row].length; ++column) {
 											let card = {
@@ -134,7 +189,7 @@
 										},
 								{
 											front: "つ",
-											back: "tsu"
+											back: "tsu" //TODO support alternative "tu" typing?
 										},
 								{
 											front: "ぢ",
@@ -158,24 +213,24 @@
 					let hiragana_digraphs = []; //TODO
 
 					let katakana_table = `
-	 a	i	u	e	o	n
-	 ∅	ア	イ	ウ	エ	オ	ン
-	 k	カ	キ	ク	ケ	コ
-	 g	ガ	ギ	グ	ゲ	ゴ
-	 s	サ	シ	ス	セ	ソ
-	 z	ザ	ジ	ズ	ゼ	ゾ
-	 t	タ	チ	ツ	テ	ト
-	 d	ダ	ヂ	ヅ	デ	ド
-	 n	ナ	ニ	ヌ	ネ	ノ
-	 h	ハ	ヒ	フ	ヘ	ホ
-	 b	バ	ビ	ブ	ベ	ボ
-	 p	パ	ピ	プ	ペ	ポ
-	 m	マ	ミ	ム	メ	モ
-	 y	ヤ		ユ		ヨ
-	 r	ラ	リ	ル	レ	ロ
-	 w	ワ				ヲ
-	 `;
-				
+					a	i	u	e	o	n
+					∅	ア	イ	ウ	エ	オ	ン
+					k	カ	キ	ク	ケ	コ
+					g	ガ	ギ	グ	ゲ	ゴ
+					s	サ	シ	ス	セ	ソ
+					z	ザ	ジ	ズ	ゼ	ゾ
+					t	タ	チ	ツ	テ	ト
+					d	ダ	ヂ	ヅ	デ	ド
+					n	ナ	ニ	ヌ	ネ	ノ
+					h	ハ	ヒ	フ	ヘ	ホ
+					b	バ	ビ	ブ	ベ	ボ
+					p	パ	ピ	プ	ペ	ポ
+					m	マ	ミ	ム	メ	モ
+					y	ヤ		ユ		ヨ
+					r	ラ	リ	ル	レ	ロ
+					w	ワ				ヲ
+					`;
+
 					//TODO
 
 
