@@ -64,23 +64,43 @@
 					let i = Math.floor(Math.random() * cards.length);
 					current_card = cards[i];
 					display_hint = true;
+					answer_count = 0;
 
 					//TODO only show learned / learning
 					// TODO weight cards
 				}
 
 		function submit_answer(answer) {
+					let answers = data.decks[data.current_deck_idx].answers;
+					let answer_history = answers[current_card.front] || [];
+					answers[current_card.front] = answer_history;
+
 					if (current_card.back === answer) {
-								//TODO use answer count answer_count to determine if was answered correctly this first time
-								history.push('<span style="color:MediumSeaGreen;">✓</span> +1 for correct answer to ' + current_card.front);
-								//TODO adjust & display score
+								let correct = answer_count === 0;
+								answer_history.push(correct);
+								while (answer_history.length > data.settings.answer_history_size) {
+											history.shift();
+										}
+								let up = answer_history.filter(x => x).length;
+								let down = answer_history.length - up;
+								let value = Math.ceil(score(up, down) * 100);
+
+								if (correct) {
+											answer_history.push(true);
+											history.push('<span style="color:MediumSeaGreen;">✓</span> +1 for correct answer to ' + current_card.front + ' ( ' + value + '% )');
+										}
+								else {
+											answer_history.push(false);
+											history.push('<span style="color:LightCoral;">✗</span> -1 for incorrect answer to ' + current_card.front + ' ( ' + value + ')% ');
+										}
 							}
 					else {
-								history.push('<span style="color:Tomato;">✗</span> -1 for incorrect answer to ' + current_card.front);
-								//TODO adjust & display score
+								answer_count++;
+								return;
 							}
 
-					if (history.length > 5) {
+
+					if (history.length > data.settings.history_size) {
 								history.shift();
 							}
 					pick_next_card();
@@ -105,6 +125,12 @@
 								s += '<br>' + h;
 							}
 					history_ele.innerHTML = s.trim();
+					if (answer_count > 0) {
+								input_ele.style.backgroundColor = 'LightCoral';
+							}
+					else {
+								input_ele.style.backgroundColor = null;
+							}
 				}
 
 		function init_data() {
@@ -113,7 +139,8 @@
 								decks: [],
 								current_deck_idx: null,
 								settings: {
-											history_size: 20, // number of user answers to remember
+											answer_history_size: 20, // number of user answers to remember
+											history_size: 5, // number of user answers to remember
 											learn_size: 5, // number of times to present the card with a hint before considering it "learned" and moving on to other card(s)
 											learn_draw_rate: 0.1, // probably of choosing a card being learned
 											draw_weight_modifier: 1.0 // near 0 results in uniform draws from learned. Higher values will focus on cards with poor score.
@@ -128,6 +155,7 @@
 
 		// lower of wilson interval
 		function score(positive, negative) {
+					if (positive === 0 && negative === 0) return 0;
 					let p = positive;
 					let n = negative;
 					return ((p + 1.9208) / (p + n) - 1.96 * Math.sqrt((p * n) / (p + n) + 0.9604) / (p + n)) / (1 + 3.8416 / (p + n))
@@ -137,23 +165,23 @@
 					let cards = {};
 
 					let hiragana_table = `
-					_	a	i	u	e	o	n
-					_	あ	い	う	え	お	ん
-					k	か	き	く	け	こ
-					g	が	ぎ	ぐ	げ	ご
-					s	さ	し	す	せ	そ
-					z	ざ	じ	ず	ぜ	ぞ
-					t	た	ち	つ	て	と
-					d	だ	ぢ	づ	で	ど
-					n	な	に	ぬ	ね	の
-					h	は	ひ	ふ	へ	ほ
-					b	ば	び	ぶ	べ	ぼ
-					p	ぱ	ぴ	ぷ	ぺ	ぽ
-					m	ま	み	む	め	も
-					y	や		ゆ		よ
-					r	ら	り	る	れ	ろ
-					w	わ				を
-					`;
+	 _	a	i	u	e	o	n
+	 _	あ	い	う	え	お	ん
+	 k	か	き	く	け	こ
+	 g	が	ぎ	ぐ	げ	ご
+	 s	さ	し	す	せ	そ
+	 z	ざ	じ	ず	ぜ	ぞ
+	 t	た	ち	つ	て	と
+	 d	だ	ぢ	づ	で	ど
+	 n	な	に	ぬ	ね	の
+	 h	は	ひ	ふ	へ	ほ
+	 b	ば	び	ぶ	べ	ぼ
+	 p	ぱ	ぴ	ぷ	ぺ	ぽ
+	 m	ま	み	む	め	も
+	 y	や		ゆ		よ
+	 r	ら	り	る	れ	ろ
+	 w	わ				を
+	 `;
 					hiragana_table = hiragana_table.trim().split('\n').map(row => row.trim().split('\t'));
 
 					for (let row = 1; row < hiragana_table.length; ++row) {
@@ -213,23 +241,23 @@
 					let hiragana_digraphs = []; //TODO
 
 					let katakana_table = `
-					a	i	u	e	o	n
-					∅	ア	イ	ウ	エ	オ	ン
-					k	カ	キ	ク	ケ	コ
-					g	ガ	ギ	グ	ゲ	ゴ
-					s	サ	シ	ス	セ	ソ
-					z	ザ	ジ	ズ	ゼ	ゾ
-					t	タ	チ	ツ	テ	ト
-					d	ダ	ヂ	ヅ	デ	ド
-					n	ナ	ニ	ヌ	ネ	ノ
-					h	ハ	ヒ	フ	ヘ	ホ
-					b	バ	ビ	ブ	ベ	ボ
-					p	パ	ピ	プ	ペ	ポ
-					m	マ	ミ	ム	メ	モ
-					y	ヤ		ユ		ヨ
-					r	ラ	リ	ル	レ	ロ
-					w	ワ				ヲ
-					`;
+	 a	i	u	e	o	n
+	 ∅	ア	イ	ウ	エ	オ	ン
+	 k	カ	キ	ク	ケ	コ
+	 g	ガ	ギ	グ	ゲ	ゴ
+	 s	サ	シ	ス	セ	ソ
+	 z	ザ	ジ	ズ	ゼ	ゾ
+	 t	タ	チ	ツ	テ	ト
+	 d	ダ	ヂ	ヅ	デ	ド
+	 n	ナ	ニ	ヌ	ネ	ノ
+	 h	ハ	ヒ	フ	ヘ	ホ
+	 b	バ	ビ	ブ	ベ	ボ
+	 p	パ	ピ	プ	ペ	ポ
+	 m	マ	ミ	ム	メ	モ
+	 y	ヤ		ユ		ヨ
+	 r	ラ	リ	ル	レ	ロ
+	 w	ワ				ヲ
+	 `;
 
 					//TODO
 
