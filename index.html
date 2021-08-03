@@ -11,9 +11,9 @@
 			<h1>Foreign Language Alphabet Study Help (FLASH) Cards</h1>
 			<div>
 				<p>Instructions: Please type the sound of the letter followed by a [space] or [enter].</p>
-				<p id="front"></p>
+				<p id="front" style="scale: 2; margin: 2em;"></p>
 				<input type="text" id="input"></input>
-				<p id="hint"></p>
+				<p id="hint" style="height: 1em;"></p>
 				<p id="history"></p>
 			</div>
 		</center>
@@ -110,15 +110,15 @@
 										}
 								let up = answer_history.filter(x => x).length;
 								let down = answer_history.length - up;
-								let value = Math.ceil(score(up, down) * 100);
+								let value = Math.ceil(score(up, down) * 100) / 100.0;
 
 								if (correct) {
 											answer_history.push(true);
-											history.push('<span style="color:MediumSeaGreen;">✓</span> +1 for correct answer to ' + current_card.front + ' ( ' + value + '% )');
+											history.push('<span style="color:MediumSeaGreen;">✓</span> +1 for correct answer to ' + current_card.front + ' ( ' + value + ' )');
 										}
 								else {
 											answer_history.push(false);
-											history.push('<span style="color:LightCoral;">✗</span> -1 for incorrect answer to ' + current_card.front + ' ( ' + value + ')% ');
+											history.push('<span style="color:LightCoral;">✗</span> -1 for incorrect answer to ' + current_card.front + ' ( ' + value + ') ');
 										}
 							}
 					else {
@@ -146,7 +146,7 @@
 				}
 
 		function render() {
-					front_ele.textContent = 'Letter: ' + current_card.front;
+					front_ele.textContent = current_card.front;
 					hint_ele.textContent = display_hint ? 'Hint: ' + (current_card.hint || current_card.back) : ' ';
 					let s = '';
 					for (h of history) {
@@ -167,7 +167,7 @@
 								decks: [],
 								current_deck_idx: null,
 								settings: {
-											answer_history_size: 20, // number of user answers to remember
+											answer_history_size: 100, // number of user answers to remember
 											history_size: 5, // number of user answers to remember
 											learn_size: 3, // number of times to present the card with a hint before considering it "learned" and moving on to other card(s)
 											learn_draw_rate: 0.75, // probably of choosing a card being learned
