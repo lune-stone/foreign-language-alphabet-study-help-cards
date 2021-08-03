@@ -12,8 +12,8 @@
 			<div>
 				<p>Instructions: Please type the sound of the letter followed by a [space] or [enter].</p>
 				<p id="front"></p>
-				<p id="hint"></p>
 				<input type="text" id="input"></input>
+				<p id="hint"></p>
 				<p id="history"></p>
 			</div>
 		</center>
@@ -48,7 +48,7 @@
 					if (data.version !== 1) {
 								throw "unsupported data version: " + data.version;
 							}
-					displayHint = false;
+					display_hint = false;
 					answer_count = 0;
 					history = [];
 
@@ -60,14 +60,41 @@
 				}
 
 		function pick_next_card() {
+					let last_card = current_card;
 					let cards = Object.values(data.decks[0].cards);
-					let i = Math.floor(Math.random() * cards.length);
-					current_card = cards[i];
-					display_hint = true;
+
+					let min_learning = Number.MAX_SAFE_INTEGER;
+					let learning = [];
+					let learned = [];
+
+					for (let card of cards) {
+								let answers = data.decks[data.current_deck_idx].answers[card.front] || [];
+								if (answers.length < data.settings.learn_size) {
+											learning.push(card);
+											min_learning = Math.min(min_learning, card.group);
+										}
+								else {
+											learned.push(card);
+										}
+							}
+					learning = learning.filter(x => x.group === min_learning);
+
+					let r = Math.random();
+					if (learning.length !== 0 && (learned.length === 0 || r < data.settings.learn_draw_rate)) {
+								current_card = learning[Math.floor(Math.random() * learning.length)]; //TODO weighted
+								display_hint = true;
+							}
+					else {
+								current_card = learned[Math.floor(Math.random() * learned.length)]; //TODO weighted
+								display_hint = false;
+							}
+
 					answer_count = 0;
 
-					//TODO only show learned / learning
-					// TODO weight cards
+					if (current_card == last_card) {
+								// avoid confusing the user by always using a different card
+								pick_next_card(); //HACK
+							}
 				}
 
 		function submit_answer(answer) {
@@ -79,7 +106,7 @@
 								let correct = answer_count === 0;
 								answer_history.push(correct);
 								while (answer_history.length > data.settings.answer_history_size) {
-											history.shift();
+											answer_history.shift();
 										}
 								let up = answer_history.filter(x => x).length;
 								let down = answer_history.length - up;
@@ -96,6 +123,7 @@
 							}
 					else {
 								answer_count++;
+								display_hint = true;
 								return;
 							}
 
@@ -119,7 +147,7 @@
 
 		function render() {
 					front_ele.textContent = 'Letter: ' + current_card.front;
-					hint_ele.textContent = display_hint ? 'Hint: ' + (current_card.hint || current_card.back) : '';
+					hint_ele.textContent = display_hint ? 'Hint: ' + (current_card.hint || current_card.back) : ' ';
 					let s = '';
 					for (h of history) {
 								s += '<br>' + h;
@@ -141,8 +169,8 @@
 								settings: {
 											answer_history_size: 20, // number of user answers to remember
 											history_size: 5, // number of user answers to remember
-											learn_size: 5, // number of times to present the card with a hint before considering it "learned" and moving on to other card(s)
-											learn_draw_rate: 0.1, // probably of choosing a card being learned
+											learn_size: 3, // number of times to present the card with a hint before considering it "learned" and moving on to other card(s)
+											learn_draw_rate: 0.75, // probably of choosing a card being learned
 											draw_weight_modifier: 1.0 // near 0 results in uniform draws from learned. Higher values will focus on cards with poor score.
 										}
 							};
