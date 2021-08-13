@@ -228,36 +228,13 @@
 							}
 
 					let exceptional_hiragana = [
-								{
-											front: "ふ",
-											back: "fu"
-										},
-								{
-											front: "し",
-											back: "shi"
-										},
-								{
-											front: "じ",
-											back: "ji"
-										},
-								{
-											front: "ち",
-											back: "chi"
-										},
-								{
-											front: "つ",
-											back: "tsu" //TODO support alternative "tu" typing?
-										},
-								{
-											front: "ぢ",
-											back: "di",
-											hint: "di (uncommon, sounds like ji / じ in most dialects)"
-										},
-								{
-											front: "づ",
-											back: "du",
-											hint: "du (uncommon, sounds like zu / ず in most dialects)"
-										}
+								{ front: "ふ", back: "fu" },
+								{ front: "し", back: "shi" },
+								{ front: "じ", back: "ji" },
+								{ front: "ち", back: "chi" },
+								{ front: "つ", back: "tsu" }, //TODO support alternative "tu" typing?
+								{ front: "ぢ", back: "di", hint: "di (uncommon, sounds like ji in most dialects)" },
+								{ front: "づ", back: "du", hint: "du (uncommon, sounds like zu in most dialects)" }
 							];
 
 					for (let item of exceptional_hiragana) {
@@ -266,12 +243,53 @@
 								card.hint = item.hint;
 							}
 
-
-					let hiragana_digraphs = []; //TODO
+					let group = Math.max(... Object.values(cards).map(x => x.group)) + 1;
+					let hiragana_digraphs = [
+								{front:"きゃ",back:"kya"},
+								{front:"きゅ",back:"kyu"},
+								{front:"きょ",back:"kyo"},
+								{front:"しゃ",back:"sha"},
+								{front:"しゅ",back:"shu"},
+								{front:"しょ",back:"sho"},
+								{front:"ちゃ",back:"cha"},
+								{front:"ちゅ",back:"chu"},
+								{front:"ちょ",back:"cho"},
+								{front:"にゃ",back:"nya"},
+								{front:"にゅ",back:"nyu"},
+								{front:"にょ",back:"nyo"},
+								{front:"ひゃ",back:"hya"},
+								{front:"ひゅ",back:"hyu"},
+								{front:"ひょ",back:"hyo"},
+								{front:"みゃ",back:"mya"},
+								{front:"みゅ",back:"myu"},
+								{front:"みょ",back:"myo"},
+								{front:"りゃ",back:"rya"},
+								{front:"りゅ",back:"ryu"},
+								{front:"りょ",back:"ryo"},
+								{front:"ぎゃ",back:"gya"},
+								{front:"ぎゅ",back:"gyu"},
+								{front:"ぎょ",back:"gyo"},
+								{front:"じゃ",back:"ja"},
+								{front:"じゅ",back:"ju"},
+								{front:"じょ",back:"jo"},
+								{front:"ぢゃ",back:"dya",hint:"dya (uncommon, sounds like ja in most dialects)"},
+								{front:"ぢゅ",back:"dyu",hint:"dyu (uncommon, sounds like ju in most dialects)"},
+								{front:"ぢょ",back:"dyo",hint:"dyo (uncommon, sounds like jo in most dialects)"},
+								{front:"びゃ",back:"bya"},
+								{front:"びゅ",back:"byu"},
+								{front:"びょ",back:"byo"},
+								{front:"ぴゃ",back:"pya"},
+								{front:"ぴゅ",back:"pyu"},
+								{front:"ぴょ",back:"pyo"}
+							];
+					for (let item of hiragana_digraphs) {
+								item.group = group;
+								cards[item.front] = item;
+							}
 
 					let katakana_table = `
-	 a	i	u	e	o	n
-	 ∅	ア	イ	ウ	エ	オ	ン
+	 _	a	i	u	e	o	n
+	 _	ア	イ	ウ	エ	オ	ン
 	 k	カ	キ	ク	ケ	コ
 	 g	ガ	ギ	グ	ゲ	ゴ
 	 s	サ	シ	ス	セ	ソ
@@ -287,9 +305,95 @@
 	 r	ラ	リ	ル	レ	ロ
 	 w	ワ				ヲ
 	 `;
+					group = group + 1;
+					katakana_table = katakana_table.trim().split('\n').map(row => row.trim().split('\t'));
 
-					//TODO
+					for (let row = 1; row < katakana_table.length; ++row) {
+								for (let column = 1; column < katakana_table[row].length; ++column) {
+											let card = {
+														front: katakana_table[row][column],
+														back: katakana_table[row][0] + katakana_table[0][column],
+														group: group + (row - 1)
+													};
+											card.back = card.back.replaceAll('_', '');
+											if (card.front !== '') {
+														cards[card.front] = card;
+													}
+										}
+							}
 
+					let exceptional_katakana = [
+								{ front: "フ", back: "fu" },
+								{ front: "シ", back: "shi" },
+								{ front: "ジ", back: "ji" },
+								{ front: "チ", back: "chi" },
+								{ front: "ツ", back: "tsu" }, //TODO support alternative "tu" typing?
+								{ front: "ヂ", back: "di", hint: "di (uncommon, sounds like ji in most dialects)" },
+								{ front: "ヅ", back: "du", hint: "du (uncommon, sounds like zu in most dialects)" }
+							];
+					for (let item of exceptional_katakana) {
+								let card = cards[item.front];
+								card.back = item.back;
+								card.hint = item.hint;
+							}
+
+					group = Math.max(... Object.values(cards).map(x => x.group)) + 1;
+					let katakana_diagraphs = [
+								{ front: "キャ", back: "kya"},
+								{ front: "キュ", back: "kyu"},
+								{ front: "キョ", back: "kyo"},
+								{ front: "シャ", back: "sha"},
+								{ front: "シュ", back: "shu"},
+								{ front: "ショ", back: "sho"},
+								{ front: "チャ", back: "cha"},
+								{ front: "チュ", back: "chu"},
+								{ front: "チョ", back: "cho"},
+								{ front: "ニャ", back: "nya"},
+								{ front: "ニュ", back: "nyu"},
+								{ front: "ニョ", back: "nyo"},
+								{ front: "ヒャ", back: "hya"},
+								{ front: "ヒュ", back: "hyu"},
+								{ front: "ヒョ", back: "hyo"},
+								{ front: "ミャ", back: "mya"},
+								{ front: "ミュ", back: "myu"},
+								{ front: "ミョ", back: "myo"},
+								{ front: "リャ", back: "rya"},
+								{ front: "リュ", back: "ryu"},
+								{ front: "リョ", back: "ryo"},
+								{ front: "ギャ", back: "gya"},
+								{ front: "ギュ", back: "gyu"},
+								{ front: "ギョ", back: "gyo"},
+								{ front: "ジャ", back: "ja"},
+								{ front: "ジュ", back: "ju"},
+								{ front: "ジョ", back: "jo"},
+								{ front: "ヂャ", back: "dya", hint: "dya (uncommon, sounds like ja in most dialects)"},
+								{ front: "ヂュ", back: "dyu", hint: "dyu (uncommon, sounds like ju in most dialects)"},
+								{ front: "ヂョ", back: "dyo", hint: "dyo (uncommon, sounds like jo in most dialects)"},
+								{ front: "ビャ", back: "bya"},
+								{ front: "ビュ", back: "byu"},
+								{ front: "ビョ", back: "byo"},
+								{ front: "ピャ", back: "pya"},
+								{ front: "ピュ", back: "pyu"},
+								{ front: "ピョ", back: "pyo"},
+								{ front: "ヴァ", back: "va"},
+								{ front: "ヴィ", back: "vi"},
+								{ front: "ヴェ", back: "ve"},
+								{ front: "ヴォ", back: "vo"},
+								{ front: "ウィ", back: "wi"},
+								{ front: "ウェ", back: "we"},
+								{ front: "ウォ", back: "wo"},
+								{ front: "ファ", back: "fa"},
+								{ front: "フィ", back: "fi"},
+								{ front: "フェ", back: "fe"},
+								{ front: "フォ", back: "fo"},
+								{ front: "シェ", back: "she"},
+								{ front: "ジェ", back: "je"},
+								{ front: "チェ", back: "che"}
+							];
+					for (let item of katakana_diagraphs) {
+								item.group = group;
+								cards[item.front] = item;
+							}
 
 					return {
 								name: 'jp -> en',
