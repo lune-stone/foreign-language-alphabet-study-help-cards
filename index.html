@@ -10,7 +10,7 @@
 		<center>
 			<h1>Foreign Language Alphabet Study Help (FLASH) Cards</h1>
 			<div>
-				<p>Instructions: Please type the sound of the letter followed by a [space] or [enter].</p>
+				<p>Instructions: Please type the sound of the letter.</p>
 				<p id="front" style="scale: 2; margin: 2em;"></p>
 				<input type="text" id="input"></input>
 				<p id="hint" style="height: 1em;"></p>
@@ -97,12 +97,29 @@
 							}
 				}
 
+		// returns true for full match, false for mismatch, and null for incomplete match
+		function peek_answer(answer) {
+
+					answer = answer.trim();
+					let value = Math.max(...current_card.back.split(",")
+								.map(x => x === answer ? 1 : x.startsWith(answer) ? 0 : -1))
+					switch(value) {
+								case 1:
+									return true;
+								case 0:
+									return null;
+								case -1:
+									return false;
+							}
+				}
+
+		// adds answer to card history, and updates current card & display as needed
 		function submit_answer(answer) {
 					let answers = data.decks[data.current_deck_idx].answers;
 					let answer_history = answers[current_card.front] || [];
 					answers[current_card.front] = answer_history;
 
-					if (current_card.back === answer) {
+					if (peek_answer(answer) || false) {
 								let correct = answer_count === 0;
 								answer_history.push(correct);
 								while (answer_history.length > data.settings.answer_history_size) {
@@ -135,11 +152,11 @@
 				}
 
 		function keyup(e) {
-					//TODO auto submit if length and startswith?
-					if (e.code === 'Space' || e.code === 'Enter') {
-								let answer = input_ele.value.trim();
-								if (answer === '')
-									return;
+					let answer = input_ele.value.trim();
+					if (answer === '') {
+								return;
+							}
+					if (peek_answer(answer) !== null) {
 								submit_answer(answer);
 								input_ele.value = '';
 							}
