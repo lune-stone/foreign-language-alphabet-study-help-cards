@@ -59,6 +59,20 @@
 					render();
 				}
 
+		// input: list of (?, weight) pairs ex: [['a', 1], ['b', 1], ['c', 3]]
+		// return: the index to the picked element
+		function random_weighted_choice(weighted_list) {
+					if (weighted_list.length === 0) return -1;
+
+					let sum = weighted_list.reduce((a,b) => [null, a[1] + b[1]])[1];
+					let r = Math.random() * sum;
+					for (let i = 0; i < weighted_list.length; ++i) {
+								r -= weighted_list[i][1];
+								if (r <= 0) return i;
+							}
+					throw "dev bug: random value was not in the weighted range";
+				}
+
 		function pick_next_card() {
 					let last_card = current_card;
 					let cards = Object.values(data.decks[0].cards);
@@ -81,11 +95,18 @@
 
 					let r = Math.random();
 					if (learning.length !== 0 && (learned.length === 0 || r < data.settings.learn_draw_rate)) {
-								current_card = learning[Math.floor(Math.random() * learning.length)]; //TODO weighted
+								current_card = learning[Math.floor(Math.random() * learning.length)];
 								display_hint = true;
 							}
 					else {
-								current_card = learned[Math.floor(Math.random() * learned.length)]; //TODO weighted
+								// weigh and order cards by score
+								let s = [];
+								for (let i of learned) {
+											s.push([i.front, 1 - card_score(i.front)]);
+										}
+								let idx = random_weighted_choice(s);
+								let next = s[idx][0];
+								current_card = data.decks[data.current_deck_idx].cards[next];
 								display_hint = false;
 							}
 
@@ -125,9 +146,7 @@
 								while (answer_history.length > data.settings.answer_history_size) {
 											answer_history.shift();
 										}
-								let up = answer_history.filter(x => x).length;
-								let down = answer_history.length - up;
-								let value = Math.ceil(score(up, down) * 100) / 100.0;
+								let value = card_score(current_card.front);
 
 								if (correct) {
 											answer_history.push(true);
@@ -205,6 +224,14 @@
 					let p = positive;
 					let n = negative;
 					return ((p + 1.9208) / (p + n) - 1.96 * Math.sqrt((p * n) / (p + n) + 0.9604) / (p + n)) / (1 + 3.8416 / (p + n))
+				}
+
+		function card_score(card_front) {
+					let answer_history = data.decks[data.current_deck_idx].answers[card_front] || [];
+					let up = answer_history.filter(x => x).length;
+					let down = answer_history.length - up;
+					let value = Math.ceil(score(up, down) * 100.0) / 100.0;
+					return value;
 				}
 
 		function create_jp_deck() {
