@@ -204,11 +204,10 @@
 								decks: [],
 								current_deck_idx: null,
 								settings: {
-											answer_history_size: 100, // number of user answers to remember
-											history_size: 5, // number of user answers to remember
+											answer_history_size: 100, // number of user answers to remember on each card
+											history_size: 5, // ui history size
 											learn_size: 3, // number of times to present the card with a hint before considering it "learned" and moving on to other card(s)
-											learn_draw_rate: 0.75, // probably of choosing a card being learned
-											draw_weight_modifier: 1.0 // near 0 results in uniform draws from learned. Higher values will focus on cards with poor score.
+											learn_draw_rate: 0.40 // probably of choosing a card being learned
 										}
 							};
 
