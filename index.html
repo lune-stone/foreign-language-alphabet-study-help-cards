@@ -241,6 +241,7 @@
 
 					data.decks.push(create_jp_deck());
 					data.decks.push(create_es_deck());
+					data.decks.push(create_morse_deck());
 					data.current_deck_idx = 0;
 
 					return data;
@@ -487,6 +488,51 @@
 								answers: {}
 							};
 				}
+
+		function create_morse_deck() {
+					let cards = {};
+
+					for (let card of [
+								{"front":"·−","back":"a"},
+								{"front":"−···","back":"b"},
+								{"front":"−·−·","back":"c"},
+								{"front":"−··","back":"d"},
+								{"front":"·","back":"e"},
+								{"front":"··−·","back":"f"},
+								{"front":"−−·","back":"g"},
+								{"front":"····","back":"h"},
+								{"front":"··","back":"i"},
+								{"front":"·−−−","back":"j"},
+								{"front":"−·−","back":"k"},
+								{"front":"·−··","back":"l"},
+								{"front":"−−","back":"m"},
+								{"front":"−·","back":"n"},
+								{"front":"−−−","back":"o"},
+								{"front":"·−−·","back":"p"},
+								{"front":"−−·−","back":"q"},
+								{"front":"·−·","back":"r"},
+								{"front":"···","back":"s"},
+								{"front":"−","back":"t"},
+								{"front":"··−","back":"u"},
+								{"front":"···−","back":"v"},
+								{"front":"·−−","back":"w"},
+								{"front":"−··−","back":"x"},
+								{"front":"−·−−","back":"y"},
+								{"front":"−−··","back":"z"}
+
+							]) {
+								card['group'] = 0;
+								cards[card.front] = card;
+							}
+
+					return {
+								name: 'morse code (en) -> en',
+								cards: cards,
+								instructions: "Please type the letter.",
+								answers: {}
+							};
+				}
+
 		start();
 	</script>
 
