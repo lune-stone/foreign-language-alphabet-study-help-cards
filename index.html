@@ -242,6 +242,7 @@
 					data.decks.push(create_jp_deck());
 					data.decks.push(create_es_deck());
 					data.decks.push(create_morse_deck());
+					data.decks.push(create_braille_deck());
 					data.current_deck_idx = 0;
 
 					return data;
@@ -532,6 +533,49 @@
 								answers: {}
 							};
 				}
+
+		function create_braille_deck() {
+					let cards = {};
+
+					for (let card of [
+								{"front":"⠁","back":"a","group":0},
+								{"front":"⠃","back":"b","group":0},
+								{"front":"⠉","back":"c","group":0},
+								{"front":"⠙","back":"d","group":0},
+								{"front":"⠑","back":"e","group":0},
+								{"front":"⠋","back":"f","group":0},
+								{"front":"⠛","back":"g","group":0},
+								{"front":"⠓","back":"h","group":0},
+								{"front":"⠊","back":"i","group":0},
+								{"front":"⠚","back":"j","group":0},
+								{"front":"⠅","back":"k","group":1},
+								{"front":"⠇","back":"l","group":1},
+								{"front":"⠍","back":"m","group":1},
+								{"front":"⠝","back":"n","group":1},
+								{"front":"⠕","back":"o","group":1},
+								{"front":"⠏","back":"p","group":1},
+								{"front":"⠟","back":"q","group":1},
+								{"front":"⠗","back":"r","group":1},
+								{"front":"⠎","back":"s","group":1},
+								{"front":"⠞","back":"t","group":1},
+								{"front":"⠥","back":"u","group":2},
+								{"front":"⠧","back":"v","group":2},
+								{"front":"⠺","back":"w","group":2},
+								{"front":"⠭","back":"x","group":2},
+								{"front":"⠽","back":"y","group":2},
+								{"front":"⠵","back":"z","group":2}
+							]) {
+								cards[card.front] = card;
+							}
+
+					return {
+								name: 'braille (en) -> en',
+								cards: cards,
+								instructions: "Please type the letter.",
+								answers: {}
+							};
+				}
+
 
 		start();
 	</script>
