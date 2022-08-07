@@ -4,9 +4,11 @@
 		<meta charset="UTF-8" />
 		<link rel="icon" href="data:,">
 		<title>Foreign Language Alphabet Study Help (FLASH) Cards</title>
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
 	</head>
 
-	<body style="overflow: hidden;">
+	<body style="overflow-x: hidden;">
 		<center>
 			<h1>Foreign Language Alphabet Study Help (FLASH) Cards</h1>
 			<div>
@@ -224,7 +226,9 @@
 					front_ele.textContent = current_card.front;
 					hint_ele.textContent = display_hint ? 'Hint: ' + (current_card.hint || current_card.back) : ' ';
 					let s = '';
-					for (h of history) {
+					let hist = [].concat(history);
+					hist.reverse(); // reversed for small screens that only show some of the list
+					for (h of hist) {
 								s += '<br>' + h;
 							}
 					history_ele.innerHTML = s.trim();
