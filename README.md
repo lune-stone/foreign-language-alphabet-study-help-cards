@@ -2,6 +2,8 @@
 
 As known as "FLASH Cards".
 
+Feel free to try it out [here.](https://lune-stone.com/foreign-language-alphabet-study-help-cards/)
+
 Unlike regular flash cards this application will automatically manage the adding cards and display frequency based on the learners recall rate.
 
 The aim of the application is to provide a near instant, error free level of recall when reading foreign letters, in as short a time as possible.
