@@ -160,7 +160,7 @@
 		// returns true for full match, false for mismatch, and null for incomplete match
 		function peek_answer(answer) {
 
-					answer = answer.trim();
+					answer = answer.trim().toLowerCase(); // phones will auto captialize the first letter
 					let value = Math.max(...current_card.back.split(",")
 								.map(x => x === answer ? 1 : x.startsWith(answer) ? 0 : -1))
 					switch(value) {
