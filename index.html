@@ -9,20 +9,29 @@
 
 		<style>
 
-			body {
-				overflow-x: hidden;
+			/* "Normal" sized screen */
+			@media (min-height: 600px) {
+				footer {
+					bottom: 0;
+					position: fixed;
+				}
 			}
 
-			center {
-				min-height: 600px;
+			/* Small screen. Avoid footer overlapping other elements */
+			@media (max-height: 600px) {
+				center {
+					min-height: 600px;
+				}
+			}
+
+			body {
+				overflow-x: hidden;
 			}
 
 			footer {
 				font-size: xx-small;
 				text-align: right;
-				position: fixed;
-				bottom: 0;
-				width: 98%;
+				width: 95%;
 			}
 
 			#hint {
