@@ -6,10 +6,46 @@
 		<title>Foreign Language Alphabet Study Help (FLASH) Cards</title>
 		<meta name="HandheldFriendly" content="true" />
 		<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
+
+		<style>
+
+			body {
+				overflow-x: hidden;
+			}
+
+			center {
+				min-height: 600px;
+			}
+
+			footer {
+				font-size: xx-small;
+				text-align: right;
+				position: fixed;
+				bottom: 0;
+				width: 98%;
+			}
+
+			#hint {
+				height: 1em;
+			}
+
+			#front-container {
+				margin: 2em;
+			}
+
+			#front {
+				background-color: #CCDDFF;
+				display: inline-block;
+				line-height: 1;
+				font-size: 2.5em
+			}
+
+		</style>
+
 	</head>
 
-	<body style="overflow-x: hidden;">
-		<center style="min-height: 600px;">
+	<body>
+		<center>
 			<h1>Foreign Language Alphabet Study Help (FLASH) Cards</h1>
 			<div>
 				<p> 
@@ -17,16 +53,16 @@
 					<select id="deck"></select>
 				</p>
 				<p id="instructions"></p>
-				<p  style="margin: 2em;">
-					<span id="front" style="background-color: #CCDDFF; display: inline-block; line-height: 1; font-size: 2.5em"></span>
+				<p id="front-container">
+					<span id="front"></span>
 				</p>
 				<input type="text" id="input"></input>
-				<p id="hint" style="height: 1em;"></p>
+				<p id="hint"></p>
 				<p id="history"></p>
 			</div>
 		</center>
 
-		<footer style="font-size: xx-small; text-align: right; position: fixed; bottom: 0; width: 98%;">
+		<footer>
 			<a href="https://github.com/lune-stone/foreign-language-alphabet-study-help-cards">
 				<img alt="Github" height="10px" width="10px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsSAAALEgHS3X78AAADDUlEQVRYw8WXX2jNYRjHz/mZmAwTx6SYiFIjZq64cBKSdrK5UC4xXCg1SlwgtamxkCLl0t3++JNS1pQsF8zKLobYMpbN5M+2NH/m+Dz1nLz79b7H7xy/k6e+Pee8f77P931/75/njUYC2pzZsVm4BFgPloOFYKpWj4Ae8BTcAzcGBt9/CMIbDRB4Je4IqAB5AfX+BE3gNEI6shJA4Om4M2BXEKEOS4Kr4BBCvgQWoKNu1GkOw+TzVNpmI2oJHsc1g2mRcG0IbENEq1MAwUtxrTkIboqII6I9VeAZwQtxDb7gXbqYhrIM1qQcKRPuBo01XgB2FhT7SGpQW4mPgd1gwNh2neC+olPLItpG2sa0b42Ps1hj/fkEKFqNe2QZRSkkT3w7Yy54Qfkv3+eTwSwB78wVT/kqXLuFu4x2j1P7+qhjGieYf5TYup1U0LO/cRgmMSs8FBbxo9zRaFkIC8/FUS6xPT1ebSrfglshCBCON46ZSYiAuKPjcab1479GV44Tjuq4CCixVIzpSRiWNSqn30o8y9YT63Od3VnOgnD1WaqKRUC+peJ7Dk7BH5ayfM91GeZAQMxWKAKGLeUFbJFYWJGVq8BSNSwCuh39Noc4ehdXt+c4JsWqUZ4XwuiFo9pR3S4CWhyVkvfVhTD6OuWyWUsUhfJt+sEURyO5og+wlfozHLlcWhfAdkeTr6AodRtewu0zFN8Gp8A6YwtdB3eBpFUdCBqzTHUZWAE2gq1gYhqNl+HYnxIwH/ccTNZE8jC4qHf9Gl/HZs3vkj4BUa1LBJigUbAUjl5PT6peXK2RI0g2LInpDstFUu8PrhxSVh/wC9VqzHEZkWQubcb/kzTq0QUkGc4xsAk8TEPcFSB4m5kl+ZNSyQ0egEVadBAR5zNYeDNwn9I0eQXWmgvalpYv0K25WItE0E0wKKsWnINgNAsBL8EG+r4O8jCZibvmOMEKIfmcoYA7YKctv/DSJBFbwB4debYmD9Qq4XIlN0Eep/IC3quQmZkH2TdH20l670uwK7rXR9I+TpPJZOR/2m/QfQkUCXXnxAAAAABJRU5ErkJggg==" />
 			View on GitHub
